@@ -10,7 +10,7 @@ class Todo extends Model
 {
     protected $fillable = ['task','user_id','status'];
 
-    public function usersData(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class,'user_id','id');
     }

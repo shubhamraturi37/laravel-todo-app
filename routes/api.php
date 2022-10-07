@@ -21,16 +21,18 @@ Route::group(['middleware' => 'guest:sanctum'], function () {
 Route::group(['middleware'=>'auth:sanctum'],function(){
     //Todo List
     Route::group(['prefix' => 'todo', 'as' => 'todos.'], function () {
-        Route::post('/', 'API\Todo\TodoController@index')->name('Todos');
+        Route::get('/', 'API\Todo\TodoController@index')->name('Todos');
         Route::post('/create', 'API\Todo\TodoController@create')->name('Create Todo');
         Route::put('/update/{todo}', 'API\Todo\TodoController@update')->name('Update Todo');
-        Route::delete('/delete/{todo}', 'API\Todo\TodoController@destroy')->name('Delete Todo');
+        Route::put('/delete/{todo}', 'API\Todo\TodoController@completed')->name('complete Todo');
+        Route::delete('/delete/{todo}', 'API\Todo\TodoController@destroy')->name('Permanent Delete Todo');
     });
 });
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/todo', 'API\TodoController@index')->name('todo List');
+
+
 
 

@@ -44,10 +44,14 @@ class User extends Authenticatable
         return 1;
     }
 
-public function todos(): \Illuminate\Database\Eloquent\Relations\HasMany
+public function pendingTodos(): \Illuminate\Database\Eloquent\Relations\HasMany
 {
         return $this->hasMany(Todo::class)->orderBy('id','DESC')->where('status',1);
 }
+    public function completedTodos(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Todo::class)->orderBy('id','DESC')->where('status',0);
+    }
 
 
 }

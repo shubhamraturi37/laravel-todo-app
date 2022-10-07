@@ -25,5 +25,5 @@ Route::get('/user', [UserController::class, 'show'])->middleware('auth')->name('
 
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/todolist', 'TodoListController@web')->name('todo List');
+//Route::get('/todolist', 'TodoListController@web')->name('todo List');
 

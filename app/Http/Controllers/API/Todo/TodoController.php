@@ -5,9 +5,10 @@ namespace App\Http\Controllers\API\Todo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Todo\TodoRequest;
 use App\Models\Todo;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Response;
 
 
 class TodoController extends Controller
@@ -22,7 +23,7 @@ class TodoController extends Controller
     {
         $user = $request->user();
 
-        $todos = $user->with(['todos'])->where('id', $user->id)->get();
+        $todos = $user->with(['pendingTodos','completedTodos'])->where('id', $user->id)->get();
         return response()->json([
             'data' => $todos,
         ]);
@@ -61,15 +62,30 @@ class TodoController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Mark as completed resource.
      *
      * @param Todo $todo
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function destroy(Todo $todo)
+    public function completed(Todo $todo): Response
     {
 
         $todo->update(['status' => 0]);
+        return response()->noContent();
+
+    }
+
+    /**
+     * Remove permanent resource.
+     *
+     * @param Todo $todo
+     * @return Response
+     * @throws Exception
+     */
+    public function destroy(Todo $todo): Response
+    {
+
+        $todo->delete($todo);
         return response()->noContent();
 
     }
