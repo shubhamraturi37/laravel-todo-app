@@ -75,6 +75,7 @@ class TodoController extends Controller
      */
     public function update(TodoRequest $request, Todo $todo, TodoLabel $todoLabel): JsonResponse
     {
+
         DB::beginTransaction();
         $todo->update($request->validated());
         $label = $request->only('notes', 'priority', 'due_date');
