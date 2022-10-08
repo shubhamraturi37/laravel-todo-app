@@ -6,7 +6,7 @@ use App\User;
 
 class RegisterController extends Controller{
 
-    public function __invoke(RegisterRequest $request)
+    public function __invoke(RegisterRequest $request): array
     {
        $user = new User();
        $user->fill($request->payload());

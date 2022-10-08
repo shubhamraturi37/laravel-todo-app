@@ -15,6 +15,10 @@ class Todo extends Model
         return $this->belongsTo(User::class,'user_id','id');
     }
 
+     function todoLabel(): \Illuminate\Database\Eloquent\Relations\HasOne
+     {
+        return $this->hasOne(TodoLabel::class);
+     }
 
 
 

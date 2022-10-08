@@ -14,11 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => 'guest:sanctum'], function () {
-    Route::post('/register', 'API\Auth\RegisterController')->name('register');
-    Route::post('/login', 'API\Auth\LoginController@login')->name('login');
+    Route::post('/register', 'API\Auth\RegisterController')->name('Register');
+    Route::post('/login', 'API\Auth\LoginController@login')->name('Login');
 });
 
 Route::group(['middleware'=>'auth:sanctum'],function(){
+    Route::post('/logout', 'API\Auth\LoginController@logout')->name('Logout');
     //Todo List
     Route::group(['prefix' => 'todo', 'as' => 'todos.'], function () {
         Route::get('/', 'API\Todo\TodoController@index')->name('Todos');
