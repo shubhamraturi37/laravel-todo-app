@@ -30,7 +30,7 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
     });
 
     Route::group(['prefix' => 'gallery', 'as' => 'gallery.'], function () {
-        //Route::get('/', 'API\Todo\TodoController@index')->name('Todos');
+        Route::get('/', 'API\Gallery\GalleryController@index')->name('Gallery');
         Route::post('/create', 'API\Gallery\GalleryController@create')->name('Create Gallery image');
 //        Route::put('/update/{todo}', 'API\Todo\TodoController@update')->name('Update Todo');
 //        Route::put('/delete/{todo}', 'API\Todo\TodoController@completed')->name('complete Todo');

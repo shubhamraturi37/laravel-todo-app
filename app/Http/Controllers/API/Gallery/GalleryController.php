@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Gallery\GalleryRequest;
 
 use App\Http\Requests\Todo\TodoRequest;
+use App\Http\Traits\HasImage;
 use App\Models\Gallery;
 use App\Models\Todo;
 use App\Models\TodoLabel;
+use Carbon\Carbon;
 use Exception;
+use http\Url;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class GalleryController extends Controller
 {
+    use HasImage;
     /**
      * Display a listing of the resource.
      *
@@ -26,6 +30,12 @@ class GalleryController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $user = $request->user();
+
+        $todos = $user->with(['galleryImage'])->where('id', $user->id)->get();
+        return response()->json([
+            'data' => $todos,
+        ]);
 
 
     }
@@ -40,21 +50,30 @@ class GalleryController extends Controller
      */
     public function create(GalleryRequest $request)
     {
+
         try {
+            DB::beginTransaction();
             $data = new Gallery();
             if ($request->file('image')) {
-                $file = $request->file('image');
-                $filename = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('/Image'), $filename);
+               $filename =  $this->setImage('gallery',$request->file('image'));
                 $data['user_id'] = auth()->user()->id;
                 $data['title'] = $request->input('title');
                 $data['image'] = $filename;
+                if(!$request->has('published_at')) {
+                    $data['published_at'] = Carbon::now();
+                }else{
+                    $data['published_at'] = $request->input('published_at');
+                }
             }
             $data->save();
+           DB::commit();
         }catch (Exception $e){
+            DB::rollBack();
+
             return response()->json(['data' => $e]);
         }
         return response()->json(['data' => $data]);
+
     }
 
     /**
@@ -70,17 +89,6 @@ class GalleryController extends Controller
       //
     }
 
-    /**
-     * Mark as completed resource.
-     *
-     * @param Todo $todo
-     * @return Response
-     */
-    public function completed(Todo $todo): Response
-    {
-//
-
-    }
 
     /**
      * Remove permanent resource.

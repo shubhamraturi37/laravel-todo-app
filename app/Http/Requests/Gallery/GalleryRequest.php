@@ -22,6 +22,7 @@ class GalleryRequest extends FormRequest
     {
         return array_merge([
             'title' => ['nullable', '', 'max:255'],
+            'published_at' => ['nullable', '', 'max:255'],
         ], $this->galleryImage());
     }
 
