@@ -91,15 +91,7 @@ class GalleryController extends Controller
      */
     public function destroy(Todo $todo): JsonResponse
     {
-        try {
-            DB::beginTransaction();
-            $todo->todoLabel()->delete();
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json(['data' => $e]);
-        }
-        return response()->json(['data' => 'success']);
+   //
 
     }
 
