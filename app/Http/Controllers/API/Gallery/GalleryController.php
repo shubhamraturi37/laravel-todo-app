@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API\Todo;
+namespace App\Http\Controllers\API\Gallery;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Todo\GalleryRequest;
+use App\Http\Requests\Gallery\GalleryRequest;
+
 use App\Http\Requests\Todo\TodoRequest;
+use App\Models\Gallery;
 use App\Models\Todo;
 use App\Models\TodoLabel;
 use Exception;
@@ -14,7 +16,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 
-class TodoController extends Controller
+class GalleryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,12 +26,7 @@ class TodoController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user();
 
-        $todos = $user->with(['pendingTodos', 'completedTodos'])->where('id', $user->id)->get();
-        return response()->json([
-            'data' => $todos,
-        ]);
 
     }
 
@@ -38,32 +35,26 @@ class TodoController extends Controller
      *
      * @param TodoRequest $request
      * @param GalleryRequest $labelRequest
-     * @return JsonResponse
+     * @return string
      * @throws Exception
      */
-    public function create(TodoRequest $request, GalleryRequest $labelRequest): JsonResponse
+    public function create(GalleryRequest $request)
     {
-        $todoLabel = [];
-        $todo = new Todo();
-        $todo->fill($request->payload());
-        $todo->save();
-
-        if ($labelRequest->hasAny('due_date', 'priority', 'notes')) {
-            try {
-                $todoLabel = new TodoLabel();
-                $todoLabel->fill($labelRequest->payload($todo));
-                $todoLabel->save();
-            } catch (Exception $e) {
-                $todo->delete();
-                return response()->json([
-                    'data' => $e,
-                ]);
+        try {
+            $data = new Gallery();
+            if ($request->file('image')) {
+                $file = $request->file('image');
+                $filename = date('YmdHi') . $file->getClientOriginalName();
+                $file->move(public_path('/Image'), $filename);
+                $data['user_id'] = auth()->user()->id;
+                $data['title'] = $request->input('title');
+                $data['image'] = $filename;
             }
+            $data->save();
+        }catch (Exception $e){
+            return response()->json(['data' => $e]);
         }
-
-        return response()->json([
-            'data' => [$todo, $todoLabel],
-        ]);
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -76,22 +67,7 @@ class TodoController extends Controller
      */
     public function update(TodoRequest $request, Todo $todo, TodoLabel $todoLabel): JsonResponse
     {
-        DB::beginTransaction();
-        $todo->update($request->validated());
-        $label = $request->only('notes', 'priority', 'due_date');
-        if ($label) {
-            try {
-                $todo->todoLabel()->update($label);
-                DB::commit();
-            } catch (Exception $e) {
-                DB::rollBack();
-                return response()->json(['data' => $e,]);
-            }
-        }
-
-        return response()->json([
-            'data' => $todo->with(['todoLabel'])->get(),
-        ]);
+      //
     }
 
     /**
@@ -102,9 +78,7 @@ class TodoController extends Controller
      */
     public function completed(Todo $todo): Response
     {
-
-        $todo->update(['status' => 0]);
-        return response()->noContent();
+//
 
     }
 
