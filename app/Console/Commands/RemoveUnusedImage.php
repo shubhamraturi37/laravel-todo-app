@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Console\Commands;
+
 use App\Models\Gallery;
 use Exception;
 use Illuminate\Support\Facades\File;
@@ -34,21 +36,21 @@ class RemoveUnusedImage extends Command
 
     public function handle()
     {
-       // Storage::delete('public/image.jpg);
-        $files =  Storage::disk('gallery')->files();
-$count = 0;
-  foreach ($files as $file){
-      $GFile = Gallery::where('image',$file)->get('image')->first();
-      if($GFile)  continue;
-$CurrentFile =  public_path('Image/gallery').'/'.$file;
-try {
-    File::delete($CurrentFile);
-    $count++;
-}catch (Exception $err){
-    $this->comment($err);
-          }
-  }
-        $this->comment($count.' File has been removed');
+        // Storage::delete('public/image.jpg);
+        $files = Storage::disk('gallery')->files();
+        $count = 0;
+        foreach ($files as $file) {
+            $GFile = Gallery::where('image', $file)->get('image')->first();
+            if ($GFile) continue;
+            $CurrentFile = public_path('Image/gallery') . '/' . $file;
+            try {
+                File::delete($CurrentFile);
+                $count++;
+            } catch (Exception $err) {
+                $this->comment($err);
+            }
+        }
+        $this->comment($count . ' File has been removed');
     }
 
 }
